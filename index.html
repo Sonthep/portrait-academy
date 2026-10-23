@@ -2,4 +2,45 @@
 const lessons=['Lighting Direction','Composition & Camera Angle','Posing & Body Language','Exposure & Focus','Natural Light','Night Portrait','Aura Light','Color & White Balance','Lightroom Mobile','Creative Direction','Photographing Others','Advanced Portfolio'];
 const tasks=['Front lighting','45° lighting','Side lighting','Back lighting','Top lighting','Low angle','Eye level','Rule of Thirds','Leading Lines','Symmetry','Negative Space','Night close-up'];
 const key='portrait-academy-v1';let state;try{state=JSON.parse(localStorage.getItem(key))||{done:[],notes:[]}}catch{state={done:[],notes:[]}};function save(){localStorage.setItem(key,JSON.stringify(state))}function show(tab){const v=document.getElementById('view');if(tab==='learn')v.innerHTML='<section><h2>12 บทเรียน</h2>'+lessons.map((x,i)=>'<p><b>บท '+(i+1)+': '+x+'</b><br><span class="muted">'+(i<2?'พื้นฐานสำคัญสำหรับการถ่าย Portrait':'ฝึกและทดลองถ่ายภาพจริง')+'</span></p>').join('')+'</section>';if(tab==='practice')v.innerHTML='<section><h2>ภารกิจฝึก</h2><p class="muted">สำเร็จ '+state.done.length+'/'+tasks.length+' ภารกิจ</p>'+tasks.map((x,i)=>'<label class="task"><input type="checkbox" '+(state.done.includes(i)?'checked':'')+' onchange="toggle('+i+',this.checked)"> '+x+' — ถ่าย 5 ภาพ</label>').join('')+'</section>';if(tab==='lab')v.innerHTML='<section><h2>Lighting Simulator</h2><p>ปรับมุมแสงรอบตัวแบบ (0° = หน้า, 90° = ข้าง, 180° = หลัง)</p><input id="angle" type="range" min="0" max="180" step="15" value="45" oninput="renderLight()"><p id="angleLabel"></p><svg width="100%" viewBox="0 0 320 240"><rect width="320" height="240" rx="15" fill="#152332"/><circle cx="160" cy="118" r="38" fill="#c59b7e"/><circle id="lamp" cx="85" cy="180" r="17" fill="#efc77e"/><path id="ray" stroke="#efc77e" stroke-width="2" stroke-dasharray="5 5"/><text x="160" y="225" fill="white" text-anchor="middle">ด้านหน้า / กล้อง</text></svg><p class="muted">ทดลองถ่ายจริงเพื่อดูเงา: ภาพนี้เป็นเพียงแผนผังทิศทางแสง</p></section><section><h2>vivo V30 Night Setup</h2><p>กล้องหลัง 1× · Photo Mode · Grid เปิด · Beauty ปิด · Timer 3 วินาที · ตั้งขาตั้งมั่นคง</p><p>เริ่มจากไฟถนนหรือไฟอาคารที่ส่องหน้าเพียงพอ หากตัวแบบเคลื่อนไหวให้ใช้ Shutter เร็วขึ้น</p></section>';if(tab==='lab')renderLight();if(tab==='journal')v.innerHTML='<section><h2>Photo Journal</h2><p>บันทึกผลการฝึกและสิ่งที่ต้องปรับ</p><input id="subject" placeholder="ชื่อเซสชัน เช่น Night Street"><p><textarea id="notes" rows="4" placeholder="แสง มุมกล้อง สิ่งที่เรียนรู้"></textarea></p><button onclick="addNote()">บันทึก</button><button onclick="backup()">ส่งออกข้อมูล JSON</button>'+state.notes.map(n=>'<p><b>'+esc(n.title)+'</b><br>'+esc(n.note)+'</p>').join('')+'</section>'}function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}function toggle(i,on){state.done=on?[...new Set([...state.done,i])]:state.done.filter(x=>x!==i);save();show('practice')}function addNote(){state.notes.unshift({title:document.getElementById('subject').value,note:document.getElementById('notes').value});save();show('journal')}function renderLight(){const a=Number(document.getElementById('angle').value),r=a*Math.PI/180,x=160-90*Math.sin(r),y=118+90*Math.cos(r);document.getElementById('lamp').setAttribute('cx',x);document.getElementById('lamp').setAttribute('cy',y);document.getElementById('ray').setAttribute('d','M'+x+' '+y+' L160 118');document.getElementById('angleLabel').textContent=a+'° — '+(a<60?'Front / 45°':a<120?'Side':'Back')+' Lighting'}function backup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='portrait-academy-backup.json';a.click();URL.revokeObjectURL(a.href)}show('learn');
-</script></html>
+</script></html><style>
+#aiCoach{position:fixed;right:15px;bottom:15px;z-index:50;background:#eac38b;color:#151b25;border:0;border-radius:99px;padding:13px 19px;font-weight:700;box-shadow:0 8px 30px #0009;cursor:pointer}
+#aiPanel{display:none;position:fixed;inset:0;z-index:60;background:#07101be8;overflow:auto;padding:18px}
+#aiPanel .aiInner{max-width:600px;margin:4vh auto;background:#1c2430;border-radius:18px;padding:22px;color:white;font:16px system-ui}
+#aiPanel input,#aiPanel button{max-width:100%;box-sizing:border-box}
+#aiPanel input[type=url]{width:100%;background:#111927;color:white;border:1px solid #627080;padding:12px;border-radius:8px}
+#aiPanel img{max-width:100%;max-height:340px;object-fit:contain;border-radius:12px;margin-top:12px}
+#aiPanel button{padding:12px;border-radius:9px;cursor:pointer;margin:8px 4px 8px 0}
+#aiPanel pre{white-space:pre-wrap;font:inherit;line-height:1.6}
+</style>
+<button id="aiCoach" onclick="document.getElementById('aiPanel').style.display='block'">✨ AI Photo Coach</button>
+<div id="aiPanel" role="dialog" aria-modal="true" aria-label="AI Photo Coach"><div class="aiInner">
+<button onclick="document.getElementById('aiPanel').style.display='none'">✕ ปิด</button>
+<h2>✨ AI วิเคราะห์ภาพ Portrait</h2>
+<p>เลือกภาพ JPG, PNG หรือ WEBP (ไม่เกิน 5 MB) เพื่อรับคำแนะนำด้านแสง องค์ประกอบ สี และการโพส</p>
+<label>URL ของ AI API (Cloudflare Worker)<input id="aiEndpoint" type="url" placeholder="https://your-worker.workers.dev/analyze"></label>
+<p style="font-size:13px;opacity:.75">บันทึก URL เฉพาะบนเครื่องนี้ ไม่ต้องใส่ API Key ในเว็บ</p>
+<input id="aiFile" type="file" accept="image/jpeg,image/png,image/webp">
+<img id="aiPreview" alt="ภาพที่จะวิเคราะห์" style="display:none">
+<p><button id="aiSubmit">วิเคราะห์ภาพ</button></p>
+<pre id="aiResult" aria-live="polite">ยังไม่มีผลวิเคราะห์</pre>
+</div></div>
+<script>
+(function(){
+const ep=document.getElementById('aiEndpoint'),file=document.getElementById('aiFile'),preview=document.getElementById('aiPreview'),out=document.getElementById('aiResult'),btn=document.getElementById('aiSubmit');
+ep.value=localStorage.getItem('portrait-ai-endpoint')||'';
+ep.addEventListener('change',()=>localStorage.setItem('portrait-ai-endpoint',ep.value.trim()));
+file.addEventListener('change',()=>{const f=file.files[0];if(!f)return;preview.src=URL.createObjectURL(f);preview.style.display='block'});
+btn.addEventListener('click',async()=>{
+const f=file.files[0],url=ep.value.trim();
+if(!f){out.textContent='กรุณาเลือกรูปก่อน';return}
+if(!/^image\/(jpeg|png|webp)$/.test(f.type)||f.size>5*1024*1024){out.textContent='รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 5 MB';return}
+if(!/^https:\/\//.test(url)){out.textContent='กรุณากรอก URL ของ Cloudflare Worker แบบ HTTPS';return}
+btn.disabled=true;out.textContent='กำลังวิเคราะห์ภาพ...';
+try{const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(f)});
+const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:data})});
+const result=await response.json();if(!response.ok)throw new Error(result.error||'HTTP '+response.status);
+out.textContent=result.analysis||'ไม่พบผลวิเคราะห์';
+}catch(e){out.textContent='วิเคราะห์ไม่สำเร็จ: '+e.message}finally{btn.disabled=false}
+});
+})();
+</script>
