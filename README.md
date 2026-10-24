@@ -3,10 +3,11 @@
 เว็บเรียนและฝึกถ่ายภาพ Portrait สำหรับ vivo V30 ใช้งานออนไลน์ผ่าน GitHub Pages
 
 ## Features
-- 12 portrait learning topics
+- 12 portrait lessons with detailed tips
 - 12 practice challenges
 - Interactive lighting diagram
-- Local photo journal notes and JSON backup
+- Lessons with tips linked to practice challenges
+- Local photo journal: add, edit, delete, JSON export and import
 - **ChatGPT photo review**: select a photo to preview locally, copy a review prompt, then open ChatGPT and **attach the photo manually** in chat. The website does not upload the photo or call an AI API.
 
 ## Website
